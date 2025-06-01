@@ -1,4 +1,5 @@
 import type { GitHubUser } from '../types/github';
+import { AspectRatio } from './ui/aspect-ratio';
 
 interface TradingCardProps {
   user: GitHubUser;
@@ -11,55 +12,58 @@ export const TradingCard = ({ user }: TradingCardProps) => {
   });
 
   return (
-    <div className="bg-[#161b22] rounded-xl p-6 shadow-lg max-w-xl w-full border border-[#30363d] hover:border-[#58a6ff] transition-colors">
-      <div className="flex items-center gap-4 mb-6">
-        <img 
-          src={user.avatar_url} 
-          alt={user.login} 
-          className="w-24 h-24 rounded-full border-2 border-[#30363d]"
-        />
-        <div className="flex flex-col">
-          <h2 className="text-2xl font-bold text-white">{user.name || user.login}</h2>
-          <p className="text-[#8b949e]">@{user.login}</p>
-        </div>
-      </div>
-      
-      <div className="space-y-6">
-        {user.bio && (
-          <p className="text-[#c9d1d9] text-sm">{user.bio}</p>
-        )}
-        
-        <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col items-center bg-[#21262d] rounded-lg p-3">
-            <span className="text-xl font-bold text-white">{user.public_repos}</span>
-            <span className="text-sm text-[#8b949e]">Repositories</span>
+    <div className="w-[350px]">
+      <AspectRatio ratio={63 / 88} className="bg-gradient-to-b from-yellow-100 to-yellow-200 rounded-xl p-4 shadow-lg border-8 border-yellow-400 hover:shadow-xl transition-all">
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">{user.name || user.login}</h2>
+            <span className="text-sm font-medium text-gray-600">@{user.login}</span>
           </div>
-          <div className="flex flex-col items-center bg-[#21262d] rounded-lg p-3">
-            <span className="text-xl font-bold text-white">{user.followers}</span>
-            <span className="text-sm text-[#8b949e]">Followers</span>
-          </div>
-          <div className="flex flex-col items-center bg-[#21262d] rounded-lg p-3">
-            <span className="text-xl font-bold text-white">{user.following}</span>
-            <span className="text-sm text-[#8b949e]">Following</span>
-          </div>
-        </div>
 
-        <div className="space-y-2 text-sm text-[#8b949e]">
-          {user.location && (
-            <p className="flex items-center gap-2">
-              <span>📍</span> {user.location}
-            </p>
-          )}
-          {user.company && (
-            <p className="flex items-center gap-2">
-              <span>🏢</span> {user.company}
-            </p>
-          )}
-          <p className="flex items-center gap-2">
-            <span>🗓️</span> Joined {joinedDate}
-          </p>
+          <div className="relative mb-4 bg-white rounded-lg p-2">
+            <img
+              src={user.avatar_url}
+              alt={user.login}
+              className="w-full h-full object-cover rounded-md"
+            />
+          </div>
+
+          <div className="flex-1 space-y-4">
+            {user.bio && <p className="text-sm text-gray-700 italic">{user.bio}</p>}
+
+            <div className="grid grid-cols-3 gap-2 bg-yellow-50 p-2 rounded-lg">
+              <div className="flex flex-col items-center">
+                <span className="text-lg font-bold text-gray-900">{user.public_repos}</span>
+                <span className="text-xs text-gray-600">Repos</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-lg font-bold text-gray-900">{user.followers}</span>
+                <span className="text-xs text-gray-600">Followers</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-lg font-bold text-gray-900">{user.following}</span>
+                <span className="text-xs text-gray-600">Following</span>
+              </div>
+            </div>
+
+            <div className="text-xs space-y-1 text-gray-600 bg-yellow-50 p-2 rounded-lg">
+              {user.location && (
+                <p className="flex items-center gap-1">
+                  <span>📍</span> {user.location}
+                </p>
+              )}
+              {user.company && (
+                <p className="flex items-center gap-1">
+                  <span>🏢</span> {user.company}
+                </p>
+              )}
+              <p className="flex items-center gap-1">
+                <span>🗓️</span> Joined {joinedDate}
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      </AspectRatio>
     </div>
   );
 };
