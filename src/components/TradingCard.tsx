@@ -1,5 +1,4 @@
 import type { GitHubUser } from '../types/github';
-import styles from './TradingCard.module.css';
 
 interface TradingCardProps {
   user: GitHubUser;
@@ -12,41 +11,53 @@ export const TradingCard = ({ user }: TradingCardProps) => {
   });
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <img src={user.avatar_url} alt={user.login} className={styles.avatar} />
-        <div className={styles.headerInfo}>
-          <h2>{user.name || user.login}</h2>
-          <p className={styles.username}>@{user.login}</p>
+    <div className="bg-[#161b22] rounded-xl p-6 shadow-lg max-w-xl w-full border border-[#30363d] hover:border-[#58a6ff] transition-colors">
+      <div className="flex items-center gap-4 mb-6">
+        <img 
+          src={user.avatar_url} 
+          alt={user.login} 
+          className="w-24 h-24 rounded-full border-2 border-[#30363d]"
+        />
+        <div className="flex flex-col">
+          <h2 className="text-2xl font-bold text-white">{user.name || user.login}</h2>
+          <p className="text-[#8b949e]">@{user.login}</p>
         </div>
       </div>
       
-      <div className={styles.cardBody}>
-        {user.bio && <p className={styles.bio}>{user.bio}</p>}
+      <div className="space-y-6">
+        {user.bio && (
+          <p className="text-[#c9d1d9] text-sm">{user.bio}</p>
+        )}
         
-        <div className={styles.stats}>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>{user.public_repos}</span>
-            <span className={styles.statLabel}>Repositories</span>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="flex flex-col items-center bg-[#21262d] rounded-lg p-3">
+            <span className="text-xl font-bold text-white">{user.public_repos}</span>
+            <span className="text-sm text-[#8b949e]">Repositories</span>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>{user.followers}</span>
-            <span className={styles.statLabel}>Followers</span>
+          <div className="flex flex-col items-center bg-[#21262d] rounded-lg p-3">
+            <span className="text-xl font-bold text-white">{user.followers}</span>
+            <span className="text-sm text-[#8b949e]">Followers</span>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statNumber}>{user.following}</span>
-            <span className={styles.statLabel}>Following</span>
+          <div className="flex flex-col items-center bg-[#21262d] rounded-lg p-3">
+            <span className="text-xl font-bold text-white">{user.following}</span>
+            <span className="text-sm text-[#8b949e]">Following</span>
           </div>
         </div>
 
-        <div className={styles.details}>
+        <div className="space-y-2 text-sm text-[#8b949e]">
           {user.location && (
-            <p className={styles.detail}>📍 {user.location}</p>
+            <p className="flex items-center gap-2">
+              <span>📍</span> {user.location}
+            </p>
           )}
           {user.company && (
-            <p className={styles.detail}>🏢 {user.company}</p>
+            <p className="flex items-center gap-2">
+              <span>🏢</span> {user.company}
+            </p>
           )}
-          <p className={styles.detail}>🗓️ Joined {joinedDate}</p>
+          <p className="flex items-center gap-2">
+            <span>🗓️</span> Joined {joinedDate}
+          </p>
         </div>
       </div>
     </div>
