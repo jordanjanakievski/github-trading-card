@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import type { GitHubUser } from './types/github'
-import { TradingCard } from './components/TradingCard'
-import { Input } from './components/ui/input'
-import { Button } from './components/ui/button'
+import type { GitHubUser } from '@/types/github'
+import { TradingCard } from '@/components/trading-card/PokemonCard'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 function App() {
   const [username, setUsername] = useState('')
