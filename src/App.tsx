@@ -1,51 +1,92 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import type { GitHubUser } from '@/types/github'
 import { PokemonCard } from '@/components/trading-card/PokemonCard'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { UserSearchForm } from '@/components/user-form/UserSearchForm'
+import { CardCustomizationForm } from '@/components/user-form/CardCustomizationForm'
 import { fetchGitHubContributions } from '@/lib/github'
 import type { GitHubContributions } from '@/types/github-contributions'
+import { Button } from '@/components/ui/button'
+import html2canvas from "html2canvas-pro"
 
 function App() {
-  const [username, setUsername] = useState('')
   const [user, setUser] = useState<GitHubUser | null>(null)
+  const [availableYears, setAvailableYears] = useState<number[]>([])
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [contributions, setContributions] = useState<GitHubContributions | null>(null)
+  const [showCard, setShowCard] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
 
-  const fetchGitHubUser = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!username.trim()) return
+  const handleUserFound = (foundUser: GitHubUser, years: number[]) => {
+    setUser(foundUser)
+    setAvailableYears(years)
+    setShowCard(false)
+  }
+
+  const handleGenerateCard = async (year: number, personalToken?: string) => {
+    if (!user) return
 
     setIsLoading(true)
     setError('')
-    setUser(null)
-
     try {
-      const response = await fetch(`https://api.github.com/users/${username}`)
-      if (!response.ok) {
-        throw new Error('User not found')
-      }
-      const data = await response.json()
-      setUser(data)
+      const token = personalToken || import.meta.env.VITE_GITHUB_TOKEN || ''
+      const contributionsData = await fetchGitHubContributions(user.login, token, year)
+      setContributions(contributionsData)
+      setShowCard(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch user')
+      setError(err instanceof Error ? err.message : 'Failed to fetch contributions')
+      setShowCard(false)
     } finally {
       setIsLoading(false)
     }
+  }
 
-    console.log(import.meta.env.VITE_GITHUB_TOKEN)
-    const response = await fetchGitHubContributions(username, import.meta.env.VITE_GITHUB_TOKEN || '', 2024)
-    console.log('Contributions:', response)
-    setContributions(response)
+  const handleExport = async () => {
+    if (!cardRef.current || !user) return;
+
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        logging: false,
+        useCORS: true,
+      });
+
+      const link = document.createElement("a");
+      link.download = `${user.login}-github-card.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch (error) {
+      console.error("Failed to export card:", error);
+      setError("Failed to export card");
+    }
+  };
+
+  const resetForm = () => {
+    setUser(null)
+    setAvailableYears([])
+    setError('')
+    setContributions(null)
+    setShowCard(false)
   }
 
   return (
     <div className="min-h-screen bg-[#0d1117] py-12 px-4">
       <div className="max-w-4xl mx-auto flex flex-col items-center">
-        <h1 className="text-4xl font-bold text-[#ffffff] mb-8">
-          GitHub Trading Card Generator
-        </h1>
+        <div className="flex items-center gap-4 mb-8">
+          <h1 className="text-4xl font-bold text-[#ffffff]">
+            GitHub Trading Card Generator
+          </h1>
+          {(user || showCard) && (
+            <Button
+              onClick={resetForm}
+              variant="outline"
+              className="px-4 py-2 bg-transparent border border-[#30363d] text-white hover:bg-[#161b22] transition-colors"
+            >
+              New Card
+            </Button>
+          )}
+        </div>
 
         <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9]">
           Inspired by the GitHub Graduation cards from 2021 and 2022, this site allows you to generate your own with a simple twist. 
@@ -53,30 +94,48 @@ function App() {
         <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
           There are two versions of the card available: a Pokémon style card based on your GitHub profile and a baseball style card with more stats driven information about your GitHub activity. 
         </p>
-        
-        <form onSubmit={fetchGitHubUser} className="w-full max-w-md flex gap-4 mb-8">
-          <Input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter GitHub username"
-            className="flex-1 px-4 py-2 rounded-lg bg-[#161b22] border border-[#30363d] text-white placeholder-[#8b949e] focus:outline-none focus:border-[#58a6ff] transition-colors"
+
+        {!user && (
+          <UserSearchForm onUserFound={handleUserFound} isLoading={isLoading} />
+        )}
+
+        {user && !showCard && (
+          <CardCustomizationForm
+            user={user}
+            availableYears={availableYears}
+            onGenerate={handleGenerateCard}
+            isLoading={isLoading}
+            onBack={resetForm}
           />
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="px-6 py-2 bg-[#238636] text-white rounded-lg hover:bg-[#2ea043] transition-colors disabled:bg-[#1b1f23] disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Loading...' : 'Generate Card'}
-          </Button>
-        </form>
+        )}
 
         {error && (
           <p className="text-[#f85149] mb-4">{error}</p>
         )}
         
-        <div className="w-full flex justify-center">
-          {user && <PokemonCard user={user} contributions={contributions ?? undefined} />}
+        <div className="w-full flex flex-col items-center gap-6 mt-8">
+          {showCard && user && (
+            <>
+              <div className="relative" ref={cardRef}>
+                <PokemonCard user={user} contributions={contributions ?? undefined} />
+              </div>
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => setShowCard(false)}
+                  variant="outline"
+                  className="px-4 py-2 bg-transparent border border-[#30363d] text-white hover:bg-[#161b22] transition-colors"
+                >
+                  Customize
+                </Button>
+                <Button
+                  onClick={handleExport}
+                  className="px-6 py-2 bg-[#238636] text-white rounded-lg hover:bg-[#2ea043] transition-colors"
+                >
+                  Export
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

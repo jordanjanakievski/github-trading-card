@@ -51,50 +51,7 @@ export const PokemonCard = ({ user, contributions }: TradingCardProps) => {
     }
   }, [isFlipped]);
 
-  const exportCard = async () => {
-    if (!cardRef.current) return;
 
-    // Temporarily remove tilt effects for capture
-    if (tiltRef.current?.vanillaTilt) {
-      tiltRef.current.vanillaTilt.destroy();
-    }
-    if (imageContainerRef.current?.vanillaTilt) {
-      imageContainerRef.current.vanillaTilt.destroy();
-    }
-
-    try {
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
-        scale: 2,
-        logging: false,
-        useCORS: true,
-      });
-
-      const link = document.createElement("a");
-      link.download = `${user.login}-github-card.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch (error) {
-      console.error("Failed to export card:", error);
-    }
-
-    // Reinitialize tilt effects
-    if (tiltRef.current) {
-      VanillaTilt.init(tiltRef.current, {
-        max: 35,
-        speed: 400,
-        scale: 1.0,
-      });
-    }
-    if (imageContainerRef.current && !isFlipped) {
-      VanillaTilt.init(imageContainerRef.current, {
-        max: 0,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.5,
-      });
-    }
-  };
 
   const calculateActiveDays = (contributions: GitHubContributions) => {
     const { contributionCalendar } = contributions.data.user.contributionsCollection;
@@ -222,15 +179,6 @@ export const PokemonCard = ({ user, contributions }: TradingCardProps) => {
             </AspectRatio>
           </div>
         </div>
-      </div>
-
-      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex gap-2">
-        <Button
-          onClick={exportCard}
-          className="bg-[#238636] hover:bg-[#2ea043] text-white"
-        >
-          Export
-        </Button>
       </div>
     </div>
   );

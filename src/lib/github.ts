@@ -1,9 +1,9 @@
 import type { GitHubContributions } from "../types/github-contributions";
 
 export function calculateActiveDays(contributions: GitHubContributions): number {
-  return contributions.user.contributionsCollection.contributionCalendar.weeks
-    .flatMap(week => week.contributionDays)
-    .filter(day => day.contributionCount > 0)
+  return contributions.data.user.contributionsCollection.contributionCalendar.weeks
+    .flatMap((week: { contributionDays: any; }) => week.contributionDays)
+    .filter((day: { contributionCount: number; }) => day.contributionCount > 0)
     .length;
 }
 
