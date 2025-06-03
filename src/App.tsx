@@ -38,6 +38,13 @@ function App() {
         <h1 className="text-4xl font-bold text-[#ffffff] mb-8">
           GitHub Trading Card Generator
         </h1>
+
+        <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9]">
+          Inspired by the GitHub Graduation cards from 2021 and 2022, this site allows you to generate your own with a simple twist. 
+        </p>
+        <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
+          There are two versions of the card available: a Pokémon style card based on your GitHub profile and a baseball style card with more stats driven information about your GitHub activity. 
+        </p>
         
         <form onSubmit={fetchGitHubUser} className="w-full max-w-md flex gap-4 mb-8">
           <Input

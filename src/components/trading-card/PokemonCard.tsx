@@ -1,10 +1,10 @@
-import type { GitHubUser } from '../../types/github';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
-import { useEffect, useRef, useState } from 'react';
-import VanillaTilt from 'vanilla-tilt';
-import { Button } from '@/components/ui/button';
-import GitHubIcon from '@/assets/github-icon.svg';
-import html2canvas from 'html2canvas-pro';
+import type { GitHubUser } from "../../types/github";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useEffect, useRef, useState } from "react";
+import VanillaTilt from "vanilla-tilt";
+import { Button } from "@/components/ui/button";
+import GitHubIcon from "@/assets/github-icon.svg";
+import html2canvas from "html2canvas-pro";
 
 interface TradingCardProps {
   user: GitHubUser;
@@ -19,76 +19,101 @@ interface TiltElement extends HTMLDivElement {
 export const TradingCard = ({ user }: TradingCardProps) => {
   const tiltRef = useRef<TiltElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const imageContainerRef = useRef<TiltElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
     const tiltNode = tiltRef.current;
     if (tiltNode) {
       VanillaTilt.init(tiltNode, {
-        max: 25,
+        max: 35,
         speed: 400,
-        glare: true,
-        'max-glare': 0.5,
-        scale: 1.00,
+        scale: 1.0,
       });
 
       return () => tiltNode.vanillaTilt.destroy();
     }
   }, []);
 
+  useEffect(() => {
+    const imageNode = imageContainerRef.current;
+    if (imageNode && !isFlipped) {
+      VanillaTilt.init(imageNode, {
+        max: 0,
+        speed: 400,
+        glare: true,
+        "max-glare": 0.5,
+      });
+
+      return () => imageNode.vanillaTilt.destroy();
+    }
+  }, [isFlipped]);
+
   const exportCard = async () => {
     if (!cardRef.current) return;
-    
-    // Temporarily remove tilt effect for capture
+
+    // Temporarily remove tilt effects for capture
     if (tiltRef.current?.vanillaTilt) {
       tiltRef.current.vanillaTilt.destroy();
+    }
+    if (imageContainerRef.current?.vanillaTilt) {
+      imageContainerRef.current.vanillaTilt.destroy();
     }
 
     try {
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: null,
-        scale: 2, // Better quality
+        scale: 2,
         logging: false,
-        useCORS: true
+        useCORS: true,
       });
 
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.download = `${user.login}-github-card.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = canvas.toDataURL("image/png");
       link.click();
     } catch (error) {
-      console.error('Failed to export card:', error);
+      console.error("Failed to export card:", error);
     }
 
-    // Reinitialize tilt effect
+    // Reinitialize tilt effects
     if (tiltRef.current) {
       VanillaTilt.init(tiltRef.current, {
-        max: 25,
+        max: 35,
+        speed: 400,
+        scale: 1.0,
+      });
+    }
+    if (imageContainerRef.current && !isFlipped) {
+      VanillaTilt.init(imageContainerRef.current, {
+        max: 0,
         speed: 400,
         glare: true,
-        'max-glare': 0.5,
-        scale: 1.00,
+        "max-glare": 0.5,
       });
     }
   };
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      ref={cardRef}
+    >
       <div
-        ref={cardRef}
+        ref={tiltRef}
+        onClick={() => setIsFlipped(!isFlipped)}
         className="relative"
       >
         <div
-          ref={tiltRef}
           className={`w-[350px] transform-gpu transition-transform duration-700 ${
-            isFlipped ? '[transform:rotateY(180deg)]' : ''
+            isFlipped ? "[transform:rotateY(180deg)]" : ""
           }`}
-          style={{ transformStyle: 'preserve-3d' }}
+          style={{ transformStyle: "preserve-3d" }}
         >
           {/* Front of card */}
           <div
-            style={{ backfaceVisibility: 'hidden' }}
-            className={isFlipped ? 'invisible' : ''}
+            style={{ backfaceVisibility: "hidden" }}
+            className={isFlipped ? "invisible" : ""}
           >
             <AspectRatio
               ratio={63 / 88}
@@ -96,10 +121,16 @@ export const TradingCard = ({ user }: TradingCardProps) => {
             >
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">@{user.login}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    @{user.login}
+                  </h2>
                 </div>
 
-                <div className="relative mb-4 bg-white rounded-lg p-2">
+                <div
+                  ref={imageContainerRef}
+                  className="relative mb-4 bg-white rounded-lg p-2 transform-gpu"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
                   <img
                     src={user.avatar_url}
                     alt={user.login}
@@ -139,9 +170,9 @@ export const TradingCard = ({ user }: TradingCardProps) => {
 
           {/* Back of card */}
           <div
-            style={{ backfaceVisibility: !isFlipped ? 'hidden' : undefined }}
+            style={{ backfaceVisibility: !isFlipped ? "hidden" : undefined }}
             className={`absolute inset-0 [transform:rotateY(180deg)] ${
-              !isFlipped ? 'invisible' : ''
+              !isFlipped ? "invisible" : ""
             }`}
           >
             <AspectRatio
@@ -162,14 +193,8 @@ export const TradingCard = ({ user }: TradingCardProps) => {
 
       <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 flex gap-2">
         <Button
-          onClick={() => setIsFlipped(!isFlipped)}
-          className="bg-gray-400 hover:bg-gray-500 text-black"
-        >
-          Flip
-        </Button>
-        <Button
           onClick={exportCard}
-          className="bg-green-400 hover:bg-green-500 text-black"
+          className="bg-[#238636] hover:bg-[#2ea043] text-white"
         >
           Export
         </Button>
