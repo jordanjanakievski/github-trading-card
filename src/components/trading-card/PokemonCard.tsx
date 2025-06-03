@@ -1,4 +1,5 @@
 import type { GitHubUser } from "../../types/github";
+import type { GitHubContributions } from "../../types/github-contributions";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useEffect, useRef, useState } from "react";
 import VanillaTilt from "vanilla-tilt";
@@ -8,6 +9,7 @@ import html2canvas from "html2canvas-pro";
 
 interface TradingCardProps {
   user: GitHubUser;
+  contributions?: GitHubContributions;
 }
 
 interface TiltElement extends HTMLDivElement {
@@ -16,7 +18,7 @@ interface TiltElement extends HTMLDivElement {
   };
 }
 
-export const TradingCard = ({ user }: TradingCardProps) => {
+export const PokemonCard = ({ user, contributions }: TradingCardProps) => {
   const tiltRef = useRef<TiltElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<TiltElement>(null);
@@ -94,6 +96,14 @@ export const TradingCard = ({ user }: TradingCardProps) => {
     }
   };
 
+  const calculateActiveDays = (contributions: GitHubContributions) => {
+    const { contributionCalendar } = contributions.data.user.contributionsCollection;
+    return contributionCalendar.weeks
+      .flatMap(week => week.contributionDays)
+      .filter(day => day.contributionCount > 0)
+      .length;
+  };
+
   return (
     <div
       className="relative"
@@ -116,51 +126,74 @@ export const TradingCard = ({ user }: TradingCardProps) => {
             className={isFlipped ? "invisible" : ""}
           >
             <AspectRatio
-              ratio={63 / 88}
-              className="bg-gradient-to-b from-yellow-100 to-yellow-200 rounded-xl p-4 shadow-lg border-8 border-yellow-400 hover:shadow-xl transition-all"
+              ratio={2.5 / 3.5}
+              className="bg-gradient-to-b from-gray-300 to-gray-400 rounded-xl p-2 shadow-lg border-8 border-white hover:shadow-xl transition-all"
             >
               <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    @{user.login}
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-xl font-bold text-black">
+                    {user.login}
                   </h2>
                 </div>
 
                 <div
                   ref={imageContainerRef}
-                  className="relative mb-4 bg-white rounded-lg p-2 transform-gpu"
+                  className="relative mb-2 bg-white rounded-lg p-2 transform-gpu"
                   style={{ transformStyle: "preserve-3d" }}
                 >
                   <img
                     src={user.avatar_url}
                     alt={user.login}
-                    className="w-full h-full object-cover rounded-md"
+                    className="w-full h-60 object-cover rounded-md"
                   />
                 </div>
 
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-2">
                   {user.bio && (
                     <p className="text-sm text-gray-700 italic">{user.bio}</p>
                   )}
 
-                  <div className="grid grid-cols-3 gap-1 bg-yellow-50 p-1 rounded-lg">
-                    <div className="flex flex-col items-center">
-                      <span className="text-lg font-bold text-gray-900">
-                        {user.public_repos}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg">
+                      <span className="text-lg font-bold text-white">
+                        {contributions?.data.user.contributionsCollection.totalCommitContributions ?? "-"}
                       </span>
-                      <span className="text-xs text-gray-600">Repos</span>
+                      <span className="text-xs text-gray-400">Commits</span>
                     </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-lg font-bold text-gray-900">
-                        {user.followers}
+                    
+                    <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg">
+                      <span className="text-lg font-bold text-white">
+                        {contributions?.data.user.contributionsCollection.totalPullRequestContributions ?? "-"}
                       </span>
-                      <span className="text-xs text-gray-600">Followers</span>
+                      <span className="text-xs text-gray-400">PRs</span>
                     </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-lg font-bold text-gray-900">
-                        {user.following}
+
+                    <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg">
+                      <span className="text-lg font-bold text-white">
+                        {contributions?.data.user.contributionsCollection.totalIssueContributions ?? "-"}
                       </span>
-                      <span className="text-xs text-gray-600">Following</span>
+                      <span className="text-xs text-gray-400">Issues</span>
+                    </div>
+
+                    <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg">
+                      <span className="text-lg font-bold text-white">
+                        {contributions?.data.user.contributionsCollection.totalPullRequestReviewContributions ?? "-"}
+                      </span>
+                      <span className="text-xs text-gray-400">Reviews</span>
+                    </div>
+
+                    <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg">
+                      <span className="text-lg font-bold text-white">
+                        {contributions ? calculateActiveDays(contributions) : "-"}
+                      </span>
+                      <span className="text-xs text-gray-400">Active Days</span>
+                    </div>
+
+                    <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg">
+                      <span className="text-lg font-bold text-white">
+                        {contributions?.data.user.contributionsCollection.contributionCalendar.totalContributions ?? "-"}
+                      </span>
+                      <span className="text-xs text-gray-400">Total</span>
                     </div>
                   </div>
                 </div>
@@ -176,7 +209,7 @@ export const TradingCard = ({ user }: TradingCardProps) => {
             }`}
           >
             <AspectRatio
-              ratio={63 / 88}
+              ratio={2.5 / 3.5}
               className="bg-black rounded-xl p-4 shadow-lg border-8 border-white transition-all"
             >
               <div className="flex items-center justify-center h-full">

@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import type { GitHubUser } from '@/types/github'
-import { TradingCard } from '@/components/trading-card/PokemonCard'
+import { PokemonCard } from '@/components/trading-card/PokemonCard'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { fetchGitHubContributions } from '@/lib/github'
+import type { GitHubContributions } from '@/types/github-contributions'
 
 function App() {
   const [username, setUsername] = useState('')
   const [user, setUser] = useState<GitHubUser | null>(null)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [contributions, setContributions] = useState<GitHubContributions | null>(null)
 
   const fetchGitHubUser = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,6 +33,11 @@ function App() {
     } finally {
       setIsLoading(false)
     }
+
+    console.log(import.meta.env.VITE_GITHUB_TOKEN)
+    const response = await fetchGitHubContributions(username, import.meta.env.VITE_GITHUB_TOKEN || '', 2024)
+    console.log('Contributions:', response)
+    setContributions(response)
   }
 
   return (
@@ -68,7 +76,7 @@ function App() {
         )}
         
         <div className="w-full flex justify-center">
-          {user && <TradingCard user={user} />}
+          {user && <PokemonCard user={user} contributions={contributions ?? undefined} />}
         </div>
       </div>
     </div>
