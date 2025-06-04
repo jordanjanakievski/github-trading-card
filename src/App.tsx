@@ -15,6 +15,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [contributions, setContributions] = useState<GitHubContributions | null>(null)
   const [showCard, setShowCard] = useState(false)
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
   const cardRef = useRef<HTMLDivElement>(null)
 
   const handleUserFound = (foundUser: GitHubUser, years: number[]) => {
@@ -32,6 +33,7 @@ function App() {
       const token = personalToken || import.meta.env.VITE_GITHUB_TOKEN || ''
       const contributionsData = await fetchGitHubContributions(user.login, token, year)
       setContributions(contributionsData)
+      setSelectedYear(year)
       setShowCard(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch contributions')
@@ -77,15 +79,6 @@ function App() {
           <h1 className="text-4xl font-bold text-[#ffffff]">
             GitHub Trading Card Generator
           </h1>
-          {(user || showCard) && (
-            <Button
-              onClick={resetForm}
-              variant="outline"
-              className="px-4 py-2 bg-transparent border border-[#30363d] text-white hover:bg-[#161b22] transition-colors"
-            >
-              New Card
-            </Button>
-          )}
         </div>
 
         <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9]">
@@ -117,7 +110,7 @@ function App() {
           {showCard && user && (
             <>
               <div className="relative" ref={cardRef}>
-                <PokemonCard user={user} contributions={contributions ?? undefined} />
+                <PokemonCard user={user} contributions={contributions ?? undefined} selectedYear={selectedYear} />
               </div>
               <div className="flex gap-4">
                 <Button

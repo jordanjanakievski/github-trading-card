@@ -33,6 +33,17 @@ export async function fetchGitHubContributions(
             }
           }
         }
+        repositories(first: 100, orderBy: {field: PUSHED_AT, direction: DESC}) {
+          nodes {
+            pushedAt
+            languages(first: 1, orderBy: {field: SIZE, direction: DESC}) {
+              nodes {
+                name
+                color
+              }
+            }
+          }
+        }
       }
     }
   `;

@@ -16,6 +16,17 @@ export interface GitHubContributions {
           }>;
         };
       };
+      repositories: {
+        nodes: Array<{
+          pushedAt: string;
+          languages: {
+            nodes: Array<{
+              name: string;
+              color: string;
+            }>;
+          };
+        }>;
+      };
     };
   };
 }

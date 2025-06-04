@@ -3,13 +3,65 @@ import type { GitHubContributions } from "../../types/github-contributions";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useEffect, useRef, useState } from "react";
 import VanillaTilt from "vanilla-tilt";
-import { Button } from "@/components/ui/button";
 import GitHubIcon from "@/assets/github-icon.svg";
-import html2canvas from "html2canvas-pro";
+import * as simpleIcons from 'simple-icons';
+
+const getLanguageIcon = (contributions: GitHubContributions, year: number) => {
+  // Filter repositories by year and get most used language
+  const reposInYear = contributions.data.user.repositories.nodes
+    .filter(repo => {
+      const pushedDate = new Date(repo.pushedAt);
+      return pushedDate.getFullYear() === year;
+    });
+
+  const languages = reposInYear
+    .map(repo => repo.languages.nodes[0])
+    .filter(Boolean);
+
+  if (!languages.length) return null;
+
+  // Count occurrences of each language
+  const languageCounts = languages.reduce((acc, lang) => {
+    if (!lang) return acc;
+    acc[lang.name] = (acc[lang.name] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Get the most frequent language
+  const topLanguage = Object.entries(languageCounts)
+    .sort(([, a], [, b]) => b - a)[0]?.[0];
+
+  if (!topLanguage) return null;
+
+  // Convert language name to match simple-icons format
+  const iconName = topLanguage.toLowerCase().replace(/\s+/g, '');
+  const icon = (simpleIcons as any)[`si${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`];
+
+  if (!icon) return null;
+
+  const color = languages.find(l => l?.name === topLanguage)?.color || '#000000';
+
+  return (
+    <div 
+      className="w-6 h-6"
+      title={`Most used language: ${topLanguage}`}
+    >
+      <svg 
+        role="img" 
+        viewBox="0 0 24 24"
+        fill={color}
+        className="w-full h-full"
+      >
+        <path d={icon.path} />
+      </svg>
+    </div>
+  );
+};
 
 interface TradingCardProps {
   user: GitHubUser;
   contributions?: GitHubContributions;
+  selectedYear: number;
 }
 
 interface TiltElement extends HTMLDivElement {
@@ -18,7 +70,7 @@ interface TiltElement extends HTMLDivElement {
   };
 }
 
-export const PokemonCard = ({ user, contributions }: TradingCardProps) => {
+export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardProps) => {
   const tiltRef = useRef<TiltElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<TiltElement>(null);
@@ -44,7 +96,7 @@ export const PokemonCard = ({ user, contributions }: TradingCardProps) => {
         max: 0,
         speed: 400,
         glare: true,
-        "max-glare": 0.5,
+        "max-glare": 1.0,
       });
 
       return () => imageNode.vanillaTilt.destroy();
@@ -91,6 +143,7 @@ export const PokemonCard = ({ user, contributions }: TradingCardProps) => {
                   <h2 className="text-xl font-bold text-black">
                     {user.login}
                   </h2>
+                  {contributions && getLanguageIcon(contributions, selectedYear)}
                 </div>
 
                 <div
