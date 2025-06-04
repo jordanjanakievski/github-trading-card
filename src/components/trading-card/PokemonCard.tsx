@@ -4,6 +4,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useEffect, useRef, useState } from "react";
 import VanillaTilt from "vanilla-tilt";
 import GitHubIcon from "@/assets/github-icon.svg";
+import JavaIcon from "@/assets/java-icon.svg";
 import * as simpleIcons from 'simple-icons';
 
 const getLanguageIcon = (contributions: GitHubContributions, year: number) => {
@@ -32,6 +33,23 @@ const getLanguageIcon = (contributions: GitHubContributions, year: number) => {
     .sort(([, a], [, b]) => b - a)[0]?.[0];
 
   if (!topLanguage) return null;
+
+  // Special handling for Java since it's not in simple-icons
+  if (topLanguage.toLowerCase() === 'java') {
+    return (
+      <div 
+        className="w-6 h-6"
+        title={`Most used language: ${topLanguage}`}
+      >
+        <img 
+          src={JavaIcon}
+          alt="Java"
+          className="w-full h-full"
+          style={{ filter: 'invert(71%) sepia(98%) saturate(1791%) hue-rotate(339deg) brightness(102%) contrast(98%)' }}
+        />
+      </div>
+    );
+  }
 
   // Convert language name to match simple-icons format
   const iconName = topLanguage.toLowerCase().replace(/\s+/g, '');
