@@ -51,6 +51,25 @@ const getTopLanguageColor = (contributions: GitHubContributions, year: number): 
 
 // Helper function to find the best matching icon
 const findBestMatchingIcon = (languageName: string): string | null => {
+  // Special cases where language name doesn't match icon name
+  const specialCases: Record<string, string> = {
+    'assembly': 'assemblyscript',
+    'shell': 'gnu',
+    'makefile': 'gnu',
+    'c++': 'cplusplus',
+    'objective-c': 'objectivec',
+    'objective-c++': 'objectivec',
+  };
+
+  // Check special cases first
+  const specialCase = specialCases[languageName.toLowerCase()];
+  if (specialCase) {
+    const iconKey = `si${specialCase.charAt(0).toUpperCase()}${specialCase.slice(1)}`;
+    if ((simpleIcons as any)[iconKey]) {
+      return iconKey;
+    }
+  }
+
   // Create variations of the name to try
   const variations: string[] = [
     // Original full name lowercase without spaces
@@ -100,8 +119,13 @@ const getLanguageIcon = (contributions: GitHubContributions, year: number) => {
   }, {} as Record<string, number>);
 
   // Get the most frequent language
+  // Tie -breaker: sort alphabetically
   const topLanguage = Object.entries(languageCounts)
-    .sort(([, a], [, b]) => b - a)[0]?.[0];
+    .sort(([langA, a], [langB, b]) => {
+      if (b !== a) return b - a;
+      return langA.localeCompare(langB);
+    })[0]?.[0];
+    
 
   if (!topLanguage) return null;
   console.log(`Top language for year ${year}: ${topLanguage}`);

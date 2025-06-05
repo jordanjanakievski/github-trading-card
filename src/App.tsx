@@ -81,11 +81,8 @@ function App() {
           </h1>
         </div>
 
-        <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9]">
-          Inspired by the GitHub Graduation cards from 2021 and 2022, this site allows you to generate your own with a simple twist. 
-        </p>
         <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
-          There are two versions of the card available: a Pokémon style card based on your GitHub profile and a baseball style card with more stats driven information about your GitHub activity. 
+          Inspired by the GitHub Graduation cards from 2021 and 2022, this site allows you to generate your own with a simple twist. The more contributions, the rarer the card!
         </p>
 
         {!user && (
