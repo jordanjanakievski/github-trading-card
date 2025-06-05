@@ -7,6 +7,77 @@ import GitHubIcon from "@/assets/github-icon.svg";
 import JavaIcon from "@/assets/java-icon.svg";
 import * as simpleIcons from 'simple-icons';
 
+// Helper function to create lighter versions of colors
+const getLightColor = (hexColor: string, factor: number = 0.8): string => {
+  // Convert hex to RGB
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+  
+  // Mix with white (255, 255, 255)
+  const lightR = Math.round(r + (255 - r) * factor);
+  const lightG = Math.round(g + (255 - g) * factor);
+  const lightB = Math.round(b + (255 - b) * factor);
+  
+  return `rgb(${lightR}, ${lightG}, ${lightB})`;
+};
+
+const getTopLanguageColor = (contributions: GitHubContributions, year: number): string => {
+  const reposInYear = contributions.data.user.repositories.nodes
+    .filter(repo => {
+      const pushedDate = new Date(repo.pushedAt);
+      return pushedDate.getFullYear() === year;
+    });
+
+  const languages = reposInYear
+    .map(repo => repo.languages.nodes[0])
+    .filter(Boolean);
+
+  if (!languages.length) return '#4a5568'; // default gray
+
+  const languageCounts = languages.reduce((acc, lang) => {
+    if (!lang) return acc;
+    acc[lang.name] = (acc[lang.name] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const topLanguage = Object.entries(languageCounts)
+    .sort(([, a], [, b]) => b - a)[0]?.[0];
+
+  if (!topLanguage) return '#4a5568';
+
+  return languages.find(l => l?.name === topLanguage)?.color || '#4a5568';
+};
+
+// Helper function to find the best matching icon
+const findBestMatchingIcon = (languageName: string): string | null => {
+  // Create variations of the name to try
+  const variations: string[] = [
+    // Original full name lowercase without spaces
+    languageName.toLowerCase().replace(/\s+/g, ''),
+    // Just the first word
+    languageName.split(' ')[0].toLowerCase(),
+  ];
+
+  // Add last word if it exists
+  const words = languageName.split(' ');
+  if (words.length > 1) {
+    variations.push(words[words.length - 1].toLowerCase());
+    // Add first letter of first word + second word
+    variations.push((languageName.charAt(0) + words[1]).toLowerCase());
+  }
+
+  // Try each variation
+  for (const name of variations) {
+    const iconKey = `si${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+    if ((simpleIcons as any)[iconKey]) {
+      return iconKey;
+    }
+  }
+
+  return null;
+};
+
 const getLanguageIcon = (contributions: GitHubContributions, year: number) => {
   // Filter repositories by year and get most used language
   const reposInYear = contributions.data.user.repositories.nodes
@@ -33,6 +104,7 @@ const getLanguageIcon = (contributions: GitHubContributions, year: number) => {
     .sort(([, a], [, b]) => b - a)[0]?.[0];
 
   if (!topLanguage) return null;
+  console.log(`Top language for year ${year}: ${topLanguage}`);
 
   // Special handling for Java since it's not in simple-icons
   if (topLanguage.toLowerCase() === 'java') {
@@ -51,9 +123,9 @@ const getLanguageIcon = (contributions: GitHubContributions, year: number) => {
     );
   }
 
-  // Convert language name to match simple-icons format
-  const iconName = topLanguage.toLowerCase().replace(/\s+/g, '');
-  const icon = (simpleIcons as any)[`si${iconName.charAt(0).toUpperCase()}${iconName.slice(1)}`];
+  // Try to find the best matching icon
+  const iconKey = findBestMatchingIcon(topLanguage);
+  const icon = iconKey ? (simpleIcons as any)[iconKey] : null;
 
   if (!icon) return null;
 
@@ -94,6 +166,10 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
   const imageContainerRef = useRef<TiltElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
+  const languageColor = contributions ? getTopLanguageColor(contributions, selectedYear) : '#4a5568';
+  const lightColor = getLightColor(languageColor, 0.9); // Very light version
+  const mediumColor = getLightColor(languageColor, 0.8); // Light version
+
   useEffect(() => {
     const tiltNode = tiltRef.current;
     if (tiltNode) {
@@ -120,8 +196,6 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
       return () => imageNode.vanillaTilt.destroy();
     }
   }, [isFlipped]);
-
-
 
   const calculateActiveDays = (contributions: GitHubContributions) => {
     const { contributionCalendar } = contributions.data.user.contributionsCollection;
@@ -154,13 +228,21 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
           >
             <AspectRatio
               ratio={2.5 / 3.5}
-              className="bg-gradient-to-b from-gray-300 to-gray-400 rounded-xl p-2 shadow-lg border-8 border-white hover:shadow-xl transition-all"
+              className="rounded-xl p-2 shadow-lg border-8 border-white hover:shadow-xl transition-all"
+              style={{
+                background: `linear-gradient(to bottom, ${lightColor}, ${mediumColor})`
+              }}
             >
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-xl font-bold text-black">
-                    {user.login}
-                  </h2>
+                  <div className="flex items-baseline gap-2">
+                    <h2 className="text-xl font-bold text-black">
+                      {user.login}
+                    </h2>
+                    <span className="text-sm font-medium text-gray-600">
+                      {selectedYear}
+                    </span>
+                  </div>
                   {contributions && getLanguageIcon(contributions, selectedYear)}
                 </div>
 
@@ -175,11 +257,6 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
                     className="w-full h-60 object-cover rounded-md"
                   />
                 </div>
-
-                <div className="flex-1 space-y-2">
-                  {user.bio && (
-                    <p className="text-sm text-gray-700 italic">{user.bio}</p>
-                  )}
 
                   <div className="grid grid-cols-3 gap-2">
                     <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg">
@@ -225,7 +302,6 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
                     </div>
                   </div>
                 </div>
-              </div>
             </AspectRatio>
           </div>
 
