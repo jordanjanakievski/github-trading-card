@@ -44,40 +44,38 @@ export const findBestMatchingIcon = (languageName: string): string | null => {
 
 // Get language data for a specific year
 export const getLanguageData = (contributions: GitHubContributions, year: number) => {
-  // Filter repositories by year
-  const reposInYear = contributions.data.user.repositories.nodes
-    .filter(repo => {
-      const pushedDate = new Date(repo.pushedAt);
-      return pushedDate.getFullYear() === year;
-    });
-
-  const languages = reposInYear
-    .map(repo => repo.languages.nodes[0])
-    .filter(Boolean);
+  const { contributionsCollection } = contributions.data.user;
+  
+  // Get languages from all repos where the user made commits
+  const languages = contributionsCollection.commitContributionsByRepository
+    .map(({ repository }) => repository.languages.nodes[0])
+    .filter((lang): lang is { name: string; color: string } => Boolean(lang));
 
   if (!languages.length) return null;
 
   // Count occurrences of each language
-  const languageCounts = languages.reduce((acc, lang) => {
-    if (!lang) return acc;
+  const languageCounts = languages.reduce<Record<string, number>>((acc, lang) => {
     acc[lang.name] = (acc[lang.name] || 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
 
   // Sort by frequency then alphabetically
   const topLanguage = Object.entries(languageCounts)
-    .sort(([langA, a], [langB, b]) => {
-      if (b !== a) return b - a;
+    .sort(([langA, countA], [langB, countB]) => {
+      if (countB !== countA) {
+        return countB - countA;
+      }
       return langA.localeCompare(langB);
     })[0]?.[0];
 
   if (!topLanguage) return null;
 
-  const color = languages.find(l => l?.name === topLanguage)?.color || '#000000';
+  const languageInfo = languages.find(l => l.name === topLanguage);
+  if (!languageInfo) return null;
 
   return {
     name: topLanguage,
-    color,
+    color: languageInfo.color,
     isJava: topLanguage.toLowerCase() === 'java'
   };
 };
