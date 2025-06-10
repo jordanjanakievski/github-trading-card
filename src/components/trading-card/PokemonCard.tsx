@@ -119,71 +119,73 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-2">
-                                    {/* Stats boxes with border based on rarity */}
-                                    <div
-                                        className="flex flex-col items-center bg-gray-800 p-2 rounded-lg"
-                                        style={{ boxShadow: `0 0 8px ${rarity.color}33` }}
-                                    >
-                                        <span className="text-lg font-bold text-white">
-                                            {contributions?.data.user.contributionsCollection
-                                                .totalCommitContributions ?? '-'}
-                                        </span>
-                                        <span className="text-xs text-gray-400">Commits</span>
-                                    </div>
+                                <div className="mt-2 p-4 bg-white/10 backdrop-blur-sm rounded-lg">
+                                    <div className="space-y-2">
+                                        <div className="mb-4">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-xs font-medium text-black">
+                                                    Activity Level
+                                                </span>
+                                                <span className="text-xs font-bold text-black">
+                                                    {activeDays} days
+                                                </span>
+                                            </div>
+                                            <div className="h-2 rounded-full bg-black/10">
+                                                <div
+                                                    className="h-full rounded-full transition-all"
+                                                    style={{
+                                                        width: `${Math.min((activeDays / 365) * 100, 100)}%`,
+                                                        backgroundColor: rarity.color,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
 
-                                    <div
-                                        className="flex flex-col items-center bg-gray-800 p-2 rounded-lg"
-                                        style={{ boxShadow: `0 0 8px ${rarity.color}33` }}
-                                    >
-                                        <span className="text-lg font-bold text-white">
-                                            {contributions?.data.user.contributionsCollection
-                                                .totalPullRequestContributions ?? '-'}
-                                        </span>
-                                        <span className="text-xs text-gray-400">PRs</span>
-                                    </div>
+                                        <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-medium text-black">
+                                                    Commits
+                                                </span>
+                                                <span className="text-sm font-bold text-black">
+                                                    {contributions?.data.user
+                                                        .contributionsCollection
+                                                        .totalCommitContributions ?? '-'}
+                                                </span>
+                                            </div>
 
-                                    <div
-                                        className="flex flex-col items-center bg-gray-800 p-2 rounded-lg"
-                                        style={{ boxShadow: `0 0 8px ${rarity.color}33` }}
-                                    >
-                                        <span className="text-lg font-bold text-white">
-                                            {contributions?.data.user.contributionsCollection
-                                                .totalIssueContributions ?? '-'}
-                                        </span>
-                                        <span className="text-xs text-gray-400">Issues</span>
-                                    </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-medium text-black">
+                                                    PRs
+                                                </span>
+                                                <span className="text-sm font-bold text-black">
+                                                    {contributions?.data.user
+                                                        .contributionsCollection
+                                                        .totalPullRequestContributions ?? '-'}
+                                                </span>
+                                            </div>
 
-                                    <div
-                                        className="flex flex-col items-center bg-gray-800 p-2 rounded-lg"
-                                        style={{ boxShadow: `0 0 8px ${rarity.color}33` }}
-                                    >
-                                        <span className="text-lg font-bold text-white">
-                                            {contributions?.data.user.contributionsCollection
-                                                .totalPullRequestReviewContributions ?? '-'}
-                                        </span>
-                                        <span className="text-xs text-gray-400">Reviews</span>
-                                    </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-medium text-black">
+                                                    Issues
+                                                </span>
+                                                <span className="text-sm font-bold text-black">
+                                                    {contributions?.data.user
+                                                        .contributionsCollection
+                                                        .totalIssueContributions ?? '-'}
+                                                </span>
+                                            </div>
 
-                                    <div
-                                        className="flex flex-col items-center bg-gray-800 p-2 rounded-lg"
-                                        style={{ boxShadow: `0 0 8px ${rarity.color}33` }}
-                                    >
-                                        <span className="text-lg font-bold text-white">
-                                            {activeDays}
-                                        </span>
-                                        <span className="text-xs text-gray-400">Active Days</span>
-                                    </div>
-
-                                    <div
-                                        className="flex flex-col items-center bg-gray-800 p-2 rounded-lg"
-                                        style={{ boxShadow: `0 0 8px ${rarity.color}33` }}
-                                    >
-                                        <span className="text-lg font-bold text-white">
-                                            {contributions?.data.user.contributionsCollection
-                                                .contributionCalendar.totalContributions ?? '-'}
-                                        </span>
-                                        <span className="text-xs text-gray-400">Total</span>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-medium text-black">
+                                                    Reviews
+                                                </span>
+                                                <span className="text-sm font-bold text-black">
+                                                    {contributions?.data.user
+                                                        .contributionsCollection
+                                                        .totalPullRequestReviewContributions ?? '-'}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

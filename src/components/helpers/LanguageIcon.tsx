@@ -39,7 +39,7 @@ export const LanguageIcon = ({ contributions, className = 'w-6 h-6' }: LanguageI
     const iconKey = findBestMatchingIcon(name);
     const icon = iconKey ? (simpleIcons as any)[iconKey] : null;
 
-    // If no matching icon found, use GitHub icon as fallback
+    // If no matching icon found, show GitHub icon as fallback
     if (!icon) {
         return githubIcon();
     }
