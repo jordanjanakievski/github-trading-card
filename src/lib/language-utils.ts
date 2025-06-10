@@ -43,7 +43,7 @@ export const findBestMatchingIcon = (languageName: string): string | null => {
 };
 
 // Get language data for a specific year
-export const getLanguageData = (contributions: GitHubContributions, year: number) => {
+export const getLanguageData = (contributions: GitHubContributions) => {
   const { contributionsCollection } = contributions.data.user;
   
   // Get languages from all repos where the user made commits

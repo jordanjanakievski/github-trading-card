@@ -26,7 +26,7 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
   const imageContainerRef = useRef<TiltElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const languageData = contributions ? getLanguageData(contributions, selectedYear) : null;
+  const languageData = contributions ? getLanguageData(contributions) : null;
   const lightColor = getLightColor(languageData?.color || '#4a5568', 0.8);
   const mediumColor = getLightColor(languageData?.color || '#4a5568', 0.6);
 
@@ -53,7 +53,7 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
       VanillaTilt.init(imageNode, {
         max: 0,
         speed: 400,
-        glare: true,
+        glare: rarity.name === "Rare",
         "max-glare": 1.0,
       });
 
@@ -116,7 +116,7 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
-                  {/* Stats boxes with glowing border based on rarity */}
+                  {/* Stats boxes with border based on rarity */}
                   <div className="flex flex-col items-center bg-gray-800 p-2 rounded-lg"
                        style={{ boxShadow: `0 0 8px ${rarity.color}33` }}>
                     <span className="text-lg font-bold text-white">
