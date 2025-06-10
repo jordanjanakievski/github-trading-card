@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import type { GitHubUser } from '@/types/github';
+import { GitBranch } from 'lucide-react';
 import { PokemonCard } from '@/components/trading-card/PokemonCard';
 import { UserSearchForm } from '@/components/user-form/UserSearchForm';
 import { CardCustomizationForm } from '@/components/user-form/CardCustomizationForm';
@@ -83,8 +84,7 @@ function App() {
 
                 <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
                     Inspired by the GitHub Graduation cards from 2021 and 2022, this site allows you
-                    to generate your own with a simple twist. The more contributions, the rarer the
-                    card!
+                    to generate your own with a simple twist. More account activity means a rarer card!
                 </p>
 
                 {!user && <UserSearchForm onUserFound={handleUserFound} isLoading={isLoading} />}
@@ -129,6 +129,30 @@ function App() {
                         </>
                     )}
                 </div>
+                <footer className="mt-12 flex flex-col items-center gap-4 text-[#8b949e]">
+                    <div className="flex flex-col items-center gap-2">
+                        <a
+                            href="https://github.com/jordanjanakievski/github-trading-card"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 hover:text-[#c9d1d9] transition-colors"
+                        >
+                            <GitBranch className="w-4 h-4" />
+                            <span className="text-sm">View on GitHub</span>
+                        </a>
+                        <p className="text-sm">
+                            &copy; {new Date().getFullYear()}{' '}
+                            <a
+                                href="https://janakievski.dev"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-[#c9d1d9] transition-colors"
+                            >
+                                Jordan Janakievski
+                            </a>
+                        </p>
+                    </div>
+                </footer>
             </div>
         </div>
     );
