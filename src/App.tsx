@@ -84,7 +84,8 @@ function App() {
 
                 <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
                     Inspired by the GitHub Graduation cards from 2021 and 2022, this site allows you
-                    to generate your own with a simple twist. More account activity means a rarer card!
+                    to generate your own with a simple twist. More account activity means a rarer
+                    card!
                 </p>
 
                 {!user && <UserSearchForm onUserFound={handleUserFound} isLoading={isLoading} />}
@@ -130,6 +131,9 @@ function App() {
                     )}
                 </div>
                 <footer className="mt-12 flex flex-col items-center gap-4 text-[#8b949e]">
+                    <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
+                        Disclaimer: This is not an official GitHub project.
+                    </p>
                     <div className="flex flex-col items-center gap-2">
                         <a
                             href="https://github.com/jordanjanakievski/github-trading-card"
@@ -141,14 +145,14 @@ function App() {
                             <span className="text-sm">View on GitHub</span>
                         </a>
                         <p className="text-sm">
-                            &copy; {new Date().getFullYear()}{' '}
+                            Brought to you by{' '}
                             <a
                                 href="https://janakievski.dev"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="hover:text-[#c9d1d9] transition-colors"
                             >
-                                Jordan Janakievski
+                                janakievski.dev
                             </a>
                         </p>
                     </div>
