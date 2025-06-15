@@ -83,9 +83,22 @@ function App() {
                 </div>
 
                 <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
-                    Inspired by the GitHub Graduation cards from 2021 and 2022, this site allows you
-                    to generate your own with a simple twist. More account activity means a rarer
-                    card!
+                    Inspired by the GitHub Graduation cards from{' '}
+                    <a
+                        href="https://github.com/github-education-resources/GitHubGraduation-2021"
+                        className="text-[#58a6ff] hover:underline"
+                    >
+                        2021
+                    </a>{' '}
+                    and{' '}
+                    <a
+                        href="https://github.com/github-education-resources/GitHubGraduation-2022"
+                        className="text-[#58a6ff] hover:underline"
+                    >
+                        2022
+                    </a>
+                    , this site allows you to generate your own with a simple twist. The more active
+                    you are, the rarer your card becomes!
                 </p>
 
                 {!user && <UserSearchForm onUserFound={handleUserFound} isLoading={isLoading} />}
@@ -102,8 +115,8 @@ function App() {
 
                 {error && <p className="text-[#f85149] mb-4">{error}</p>}
 
-                <div className="w-full flex flex-col items-center gap-6 mt-8">
-                    {showCard && user && (
+                {showCard && user && (
+                    <div className="w-full flex flex-col items-center gap-6 mt-8">
                         <>
                             <div className="relative" ref={cardRef}>
                                 <PokemonCard
@@ -128,10 +141,10 @@ function App() {
                                 </Button>
                             </div>
                         </>
-                    )}
-                </div>
-                <footer className="mt-12 flex flex-col items-center gap-4 text-[#8b949e]">
-                    <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
+                    </div>
+                )}
+                <footer className="mt-8 flex flex-col items-center gap-4 text-[#8b949e]">
+                    <p className="leading-7 [&:not(:first-child)]:mt-2 text-[#c9d1d9] mb-2">
                         Disclaimer: This is not an official GitHub project.
                     </p>
                     <div className="flex flex-col items-center gap-2">

@@ -1,7 +1,8 @@
 import type { GitHubContributions } from '@/types/github-contributions';
-import { findBestMatchingIcon, getLanguageData } from '@/lib/language-utils';
+import { getLanguageData } from '@/lib/language-utils';
 import JavaIcon from '@/assets/java-icon.svg';
 import * as simpleIcons from 'simple-icons';
+import type { SimpleIcon } from 'simple-icons';
 
 interface LanguageIconProps {
     contributions: GitHubContributions;
@@ -17,7 +18,9 @@ export const LanguageIcon = ({ contributions, className = 'w-6 h-6' }: LanguageI
         return githubIcon();
     }
 
-    const { name, color, isJava } = langData;
+    const { name, color, isJava, icon } = langData;
+
+    console.log('Most used language', { name });
 
     // Special handling for Java since it's not in simple-icons
     if (isJava) {
@@ -35,11 +38,7 @@ export const LanguageIcon = ({ contributions, className = 'w-6 h-6' }: LanguageI
         );
     }
 
-    // Try to find the best matching icon
-    const iconKey = findBestMatchingIcon(name);
-    const icon = iconKey ? (simpleIcons as any)[iconKey] : null;
-
-    // If no matching icon found, show GitHub icon as fallback
+    // If no icon found, show GitHub icon as fallback
     if (!icon) {
         return githubIcon();
     }
@@ -54,7 +53,7 @@ export const LanguageIcon = ({ contributions, className = 'w-6 h-6' }: LanguageI
 };
 
 function githubIcon() {
-    const icon = (simpleIcons as any).siGithub;
+    const icon = simpleIcons.siGithub as SimpleIcon;
     return (
         <div className="w-6 h-6" title="GitHub">
             <svg role="img" viewBox="0 0 24 24" fill="#24292e" className="w-full h-full">

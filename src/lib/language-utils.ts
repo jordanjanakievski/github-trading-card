@@ -1,15 +1,17 @@
 import type { GitHubContributions } from '../types/github-contributions';
 import { languageIconMap } from '../types/language-icon-map';
 import * as simpleIcons from 'simple-icons';
+import type { SimpleIcon } from 'simple-icons';
 
 export const findBestMatchingIcon = (languageName: string): string | null => {
     // Check for special case in the language icon map
     const specialCase = languageIconMap[languageName.toLowerCase()];
     if (specialCase) {
-        console.log(specialCase);
         const iconKey = `si${specialCase.charAt(0).toUpperCase()}${specialCase.slice(1)}`;
-        console.log(iconKey);
-        if ((simpleIcons as any)[iconKey]) {
+        if (
+            iconKey in simpleIcons &&
+            (simpleIcons[iconKey as keyof typeof simpleIcons] as SimpleIcon)
+        ) {
             return iconKey;
         }
     }
@@ -29,7 +31,10 @@ export const findBestMatchingIcon = (languageName: string): string | null => {
     // Try each variation
     for (const name of variations) {
         const iconKey = `si${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-        if ((simpleIcons as any)[iconKey]) {
+        if (
+            iconKey in simpleIcons &&
+            (simpleIcons[iconKey as keyof typeof simpleIcons] as SimpleIcon)
+        ) {
             return iconKey;
         }
     }
@@ -66,10 +71,19 @@ export const getLanguageData = (contributions: GitHubContributions) => {
     const languageInfo = languages.find(l => l.name === topLanguage);
     if (!languageInfo) return null;
 
+    const isJava = topLanguage.toLowerCase() === 'java';
+    const iconKey = !isJava ? findBestMatchingIcon(topLanguage) : null;
+    const icon = iconKey ? (simpleIcons[iconKey as keyof typeof simpleIcons] as SimpleIcon) : null;
+
+    // If we found an icon but not Java, use the icon's color instead
+    const color = icon && !isJava ? `#${icon.hex}` : languageInfo.color;
+
     return {
         name: topLanguage,
-        color: languageInfo.color,
-        isJava: topLanguage.toLowerCase() === 'java',
+        color,
+        isJava,
+        icon,
+        iconKey,
     };
 };
 

@@ -1,6 +1,6 @@
 # GitHub Trading Card
 
-Inspired by the trading cards created by GitHub for GitHub Graduation participants.
+Inspired by the trading cards created by GitHub for GitHub Graduation participants in 2021 and 2022.
 
 ## Usage
 
@@ -27,3 +27,11 @@ bun install
 
 bun dev
 ```
+
+## Top Language Help
+
+If you notice that the top language on the card is not displaying and using the GitHub logo instead, you can check the console for logged output for the top language.
+
+Please raise an issue indicating the language so a solution can be found as Simple Icons does not have all languages available.
+
+Thanks for your help!
