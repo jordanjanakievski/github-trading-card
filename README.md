@@ -35,3 +35,7 @@ If you notice that the top language on the card is not displaying and using the 
 Please raise an issue indicating the language so a solution can be found as Simple Icons does not use the same name for all languages as GitHub does.
 
 Thanks for your help!
+
+## Future Implementations
+
+- Holographic filter based commits or other stats
