@@ -33,10 +33,12 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
     const activeDays = contributions ? calculateActiveDays(contributions) : 0;
     const rarity = getRarityFromActiveDays(activeDays, selectedYear);
 
-    // Tilt effects
+    // Tilt effects - disabled on touch devices
     useEffect(() => {
         const tiltNode = tiltRef.current;
-        if (tiltNode) {
+        const isTouchDevice = window.matchMedia('(hover: none)').matches;
+
+        if (tiltNode && !isTouchDevice) {
             VanillaTilt.init(tiltNode, {
                 max: 35,
                 speed: 400,
@@ -49,7 +51,9 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
 
     useEffect(() => {
         const imageNode = imageContainerRef.current;
-        if (imageNode && !isFlipped) {
+        const isTouchDevice = window.matchMedia('(hover: none)').matches;
+
+        if (imageNode && !isFlipped && !isTouchDevice) {
             VanillaTilt.init(imageNode, {
                 max: 0,
                 speed: 400,
@@ -60,7 +64,7 @@ export const PokemonCard = ({ user, contributions, selectedYear }: TradingCardPr
 
             return () => imageNode.vanillaTilt.destroy();
         }
-    }, [isFlipped]);
+    }, [isFlipped, rarity?.name]);
 
     return (
         <div className="relative" ref={cardRef}>
