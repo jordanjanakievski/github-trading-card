@@ -82,7 +82,7 @@ function App() {
                     </h1>
                 </div>
 
-                <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-8">
+                <p className="leading-7 [&:not(:first-child)]:mt-6 text-[#c9d1d9] mb-4">
                     Inspired by the GitHub Graduation cards from{' '}
                     <a
                         href="https://github.com/github-education-resources/GitHubGraduation-2021"
@@ -97,8 +97,13 @@ function App() {
                     >
                         2022
                     </a>
-                    , this site allows you to generate your own with a simple twist. The more active
+                    , this site allows you to generate your own with a fun twist. The more active
                     you are, the rarer your card becomes!
+                </p>
+                <p className="leading-7 text-[#c9d1d9] mb-8">
+                    Whether you are fixing bugs, writing docs, or starting new projects, every
+                    contribution counts. Hopefully this inspires you to keep coding, contribute to
+                    open source, and watch your GitHub activity grow, one day at a time.
                 </p>
 
                 {!user && <UserSearchForm onUserFound={handleUserFound} isLoading={isLoading} />}

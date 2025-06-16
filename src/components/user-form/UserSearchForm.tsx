@@ -48,6 +48,9 @@ export function UserSearchForm({ onUserFound, isLoading }: UserSearchFormProps) 
                         placeholder="Enter GitHub username"
                         className="flex-1 px-4 py-2 rounded-lg bg-[#161b22] border border-[#30363d] text-white placeholder-[#8b949e] focus:outline-none focus:border-[#58a6ff] transition-colors"
                     />
+                    <p className="mt-2 text-sm text-[#8b949e]">
+                        Here are some examples to try: torvalds, mitchellh, yyx990803
+                    </p>
                 </div>
                 <Button
                     type="submit"
